@@ -10,12 +10,16 @@ module.exports = buildFlow.create()
     .dependOn('bemdecl', '?.bemdecl.js')
 	.useSourceFilename('page', '?.page.xml')
 	.useFileList('xml')
+    .defineOption('requireNodeSources', {})
     .builder(function (page, files) {
-        let dirname = path.dirname(page);
-        let sources = files.concat({fullname: page}).map(function(file) {
-            let relative = path.relative(dirname, file.fullname);
-            return `\t<fest:include src="${relative}"/>`;
-        }).join('\n');
-        return `<fest:template xmlns:fest="http://fest.mail.ru" context_name="json">\n${sources}\n</fest:template>`;
+        return this.node.requireNodeSources(this._requireNodeSources)
+            .then(function() {
+                let dirname = path.dirname(page);
+                let sources = files.concat({fullname: page}).map(function(file) {
+                    let relative = path.relative(dirname, file.fullname);
+                    return `\t<fest:include src="${relative}"/>`;
+                }).join('\n');
+                return `<fest:template xmlns:fest="http://fest.mail.ru" context_name="json">\n${sources}\n</fest:template>`;
+            });
 	})
 	.createTech();
