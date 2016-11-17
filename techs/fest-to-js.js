@@ -16,7 +16,6 @@ module.exports = buildFlow.create()
     .builder(function (xmlFilename) {
         var name = path.basename(this._target, '.js');
 		var templatePath = path.relative(process.cwd(), xmlFilename);
-		var pagePath = path.dirname(templatePath);
 		var template = fest.compile(templatePath, {
 			debug: this._debug,
             beautify: this._beautify
