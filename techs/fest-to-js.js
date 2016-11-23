@@ -1,24 +1,24 @@
 'use strict';
 
 let path = require('path');
-let enb = require('enb');
-let buildFlow = enb.buildFlow || require('enb/lib/build-flow');
-let vfs = enb.asyncFS || require('enb/lib/fs/async-fs');
-let _ = require('lodash');
 let fest = require('fest');
 
-module.exports = buildFlow.create()
-    .name('festjs')
+module.exports = require('enb/lib/build-flow').create()
+	.name('festjs')
 	.target('target', '?.fest.js')
-    .defineOption('debug', false)
-    .defineOption('beautify', true)
+	.defineOption('debug', false)
+	.defineOption('extname', '.fest.js')
+	.defineOption('beautify', true)
+	.defineOption('cwd', process.cwd())
+	.defineOption('templateName', function(target, extname) {
+		return path.basename(target, extname);
+	})
 	.useSourceFilename('festxml', '?.fest.xml')
-    .builder(function (xmlFilename) {
-        var name = path.basename(this._target, '.js');
-		var templatePath = path.relative(process.cwd(), xmlFilename);
-		var template = fest.compile(templatePath, {
+	.builder(function (filename) {
+		var name = this._templateName(this._target, this._extname);
+		var template = fest.compile(path.relative(this._cwd, filename), {
 			debug: this._debug,
-            beautify: this._beautify
+			beautify: this._beautify
 		});
 		return `;(function(x){
 			if(!x.fest)x.fest={};
