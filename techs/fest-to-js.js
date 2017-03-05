@@ -13,16 +13,28 @@ module.exports = require('enb/lib/build-flow').create()
 	.defineOption('templateName', function(target, extname) {
 		return path.basename(target, extname);
 	})
-	.useSourceFilename('festxml', '?.fest.xml')
+	.useSourceFilename('source', '?.fest.xml')
 	.builder(function (filename) {
 		var name = this._templateName(this._target, this._extname);
 		var template = fest.compile(path.relative(this._cwd, filename), {
 			debug: this._debug,
 			beautify: this._beautify
 		});
-		return `;(function(x){
-			if(!x.fest)x.fest={};
-			x.fest['${name}']=${template}
-		})(Function('return this')());`;
+
+		return `
+;(function () {
+	var template = ${template};
+
+	if (typeof define === 'function' && define.amd) {
+		define(function () {
+			return template;
+		});
+	} else if (typeof module !== 'undefined' && module.exports) {
+		module.exports = template;
+	} else {
+		if(!x.fest)x.fest={};
+		x.fest['${name}']=template;
+	}
+}.call(this));`;
 	})
 	.createTech();
