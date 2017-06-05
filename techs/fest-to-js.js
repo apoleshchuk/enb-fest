@@ -22,7 +22,7 @@ module.exports = require('enb/lib/build-flow').create()
 		});
 
 		return `
-;(function () {
+;(function (x) {
 	var template = ${template};
 
 	if (typeof define === 'function' && define.amd) {
@@ -35,6 +35,6 @@ module.exports = require('enb/lib/build-flow').create()
 		if(!x.fest)x.fest={};
 		x.fest['${name}']=template;
 	}
-}.call(this));`;
+}(new Function('return this')()));`;
 	})
 	.createTech();
