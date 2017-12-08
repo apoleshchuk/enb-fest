@@ -15,8 +15,7 @@
     "lodash": "^4.7.0"
   },
   "devDependencies": {},
-  "scripts": {
-  },
+  "scripts": {},
   "author": "Anton Poleshchuk <anton@poleshchuk.com>",
   "license": "ISC"
 }
