@@ -32,7 +32,7 @@ module.exports = buildFlow.create()
                         }
                     }
                 }, {});
-                constants = `<fest:script>(json.CONSTANTS = (json.CONSTANTS || {})).TARGET = ${JSON.stringify(constants, null, 4)};</fest:script>`;
+                constants = `<fest:script>json = json || {}; (json.CONSTANTS = (json.CONSTANTS || {})).TARGET = ${JSON.stringify(constants, null, 4)};</fest:script>`;
                 return `<fest:template xmlns:fest="http://fest.mail.ru" context_name="json">\n${constants}\n${sources}\n</fest:template>`;
             });
 	})
