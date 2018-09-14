@@ -1,26 +1,26 @@
-'use strict';
+const merge = require("lodash.merge");
+const fileEval = require("file-eval");
 
-let path = require('path');
-let _ = require('lodash');
+module.exports = require("enb/lib/build-flow")
+  .create()
+  .name("festdata")
+  .target("target", "?.festdata.json")
+  .useSourceFilename("source", "?.festdata.js")
+  .useFileList(["festdata.json", "festdata.js"])
+  .builder(function(source, files) {
+    return JSON.stringify(
+      files
+        .map(f => f.fullname)
+        .concat(source)
+        .reduce((json, file) => {
+          const data = fileEval.sync(file);
 
-module.exports = require('enb/lib/build-flow').create()
-    .name('festdata')
-	.target('target', '?.festdata.json')
-	.useSourceFilename('source', '?.festdata.js')
-	.useFileList(['festdata.json', 'festdata.js'])
-    .builder(function (source, files) {
-        return JSON.stringify(files.concat({
-            fullname: source
-        }).reduce(function(json, file) {
-            let data = require(file.fullname);
+          if (typeof data == "function") {
+            return data(json);
+          }
 
-            if (typeof data == 'function') {
-                json = data(json);
-            } else {
-                json = _.merge(json, data);
-            }
-
-            return json;
-        }, {}));
-	})
-	.createTech();
+          return merge(json, data);
+        }, {})
+    );
+  })
+  .createTech();

@@ -4,17 +4,19 @@
   "description": "",
   "main": "techs.js",
   "dependencies": {
-    "bem-naming": "^1.0.1",
-    "clear-require": "^1.0.1",
-    "enb": "^1.2.0",
-    "enb-async-require": "^1.0.1",
-    "enb-bem-techs": "^2.2.1",
-    "enb-require-or-eval": "^1.0.2",
-    "fest": "^0.8.2",
-    "inherit": "^2.2.3",
-    "lodash": "^4.7.0"
+    "@bem/sdk.cell": "^0.2.8",
+    "@bem/sdk.decl": "^0.3.8",
+    "@bem/sdk.naming.entity": "^0.2.10",
+    "fest": "^0.12.1",
+    "file-eval": "^2.0.0",
+    "lodash.merge": "^4.6.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "enb": "^2.0.0-0"
+  },
+  "peerDependencies": {
+    "enb": "^2.0.0-0"
+  },
   "scripts": {},
   "author": "Anton Poleshchuk <anton@poleshchuk.com>",
   "license": "ISC"

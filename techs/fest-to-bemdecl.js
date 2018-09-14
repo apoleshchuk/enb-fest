@@ -1,138 +1,29 @@
-'use strict';
+const BemCell = require("@bem/sdk.cell");
+const bemDecl = require("@bem/sdk.decl");
+const naming = require("@bem/sdk.naming.entity")("origin");
+const { parse } = naming;
 
-let inherit = require('inherit');
-let enb = require('enb');
-let vfs = enb.asyncFS || require('enb/lib/fs/async-fs');
-let requireOrEval = require('enb-require-or-eval');
-let asyncRequire = require('enb-async-require');
-let clearRequire = require('clear-require');
-let deps = require('enb-bem-techs/lib/deps/deps');
-let bemNaming = require('bem-naming');
+const TEMPLATE_NAME_RE = /fest:get name=["']([^"']+)"/gim;
 
-module.exports = inherit(enb.BaseTech, {
-	getName: function () {
-		return 'fest-to-bemdecl';
-	},
+module.exports = require("enb/lib/build-flow")
+  .create()
+  .name("fest-to-bemdecl")
+  .target("target", "?.bemdecl.js")
+  .useSourceText("source", "?.page.xml")
+  .builder(function(content) {
+    const decl = [];
+    while (TEMPLATE_NAME_RE.exec(content) !== null) {
+      const name = RegExp.$1;
+      const entity = parse(name);
 
-	configure: function () {
-		this._target = this.getOption('target', '?.bemdecl.js');
-		this._target = this.node.unmaskTargetName(this._target);
+      if (!entity) {
+        throw new Error(`Wrong bem block name ${match}
+      				Use strict naming convention https://ru.bem.info/method/naming-convention/`);
+      }
 
-		this._sourceTarget = this.getOption('source', '?.page.xml');
-		this._sourceTarget = this.node.unmaskTargetName(this._sourceTarget);
+      decl.push(new BemCell({ entity: entity }));
+    }
 
-		this._bemdeclFormat = this.getOption('bemdeclFormat', 'bemdecl');
-	},
-
-	getTargets: function () {
-		return [this._target];
-	},
-
-	build: function () {
-		var node = this.node,
-			target = this._target,
-			cache = node.getNodeCache(target),
-			bemdeclFilename = node.resolvePath(target),
-			pagexmlFilename = node.resolvePath(this._sourceTarget),
-			bemdeclFormat = this._bemdeclFormat;
-
-		return this.node.requireSources([this._sourceTarget])
-			.then(function () {
-				if (cache.needRebuildFile('bemdecl-file', bemdeclFilename) ||
-					cache.needRebuildFile('pagexml-file', pagexmlFilename)
-				) {
-					return vfs.read(pagexmlFilename, 'utf-8')
-						.then(function (pagexml) {
-							var pagexmlDeps = getDepsFromPagexml(pagexml);
-							var decl,
-								data,
-								str;
-
-							if (bemdeclFormat === 'deps') {
-								decl = pagexmlDeps;
-								data = { deps: decl };
-								str = `exports.deps = ${JSON.stringify(decl, null, 4)};\n`;
-							} else {
-								decl = deps.toBemdecl(pagexmlDeps),
-								data = { blocks: decl };
-								str = `exports.blocks = ${JSON.stringify(decl, null, 4)};\n`;
-							}
-
-							return vfs.write(bemdeclFilename, str, 'utf-8')
-								.then(function () {
-									cache.cacheFileInfo('bemdecl-file', bemdeclFilename);
-									cache.cacheFileInfo('pagexml-file', pagexmlFilename);
-									node.resolveTarget(target, data);
-								});
-						});
-				} else {
-					node.isValidTarget(target);
-					clearRequire(bemdeclFilename);
-
-					return asyncRequire(bemdeclFilename)
-						.then(function (result) {
-							node.resolveTarget(target, result);
-							return null;
-						});
-				}
-			});
-	}
-});
-
-function getDepsFromPagexml(pagexml) {
-	var deps = [], depsIndex = {};
-	var matches = pagexml.match(/fest:get name="([^"]+)"/gim);
-
-	(matches || [])
-		.map(function(match) {
-			return /name="([^"]+)"/i.exec(match)[1];
-		})
-		.map(function(name) {
-			var dep, parsed, itemKey, subItemKey;
-
-			if ((parsed = bemNaming.parse(name))) {
-				dep = {block: parsed.block};
-
-				if (parsed.elem) {
-					dep.elem = parsed.elem;
-				}
-
-				itemKey = depKey(dep);
-				if (!depsIndex[itemKey]) {
-					deps.push(dep);
-					depsIndex[itemKey] = true;
-				}
-
-				if (parsed.modName) {
-					var subDep = {block: parsed.block};
-
-					if (parsed.elem) {
-						subDep.elem = parsed.elem;
-					}
-
-					subDep.mod = parsed.modName;
-
-					if (typeof parsed.modVal == 'string' && parsed.modVal) {
-						subDep.val = parsed.modVal;
-					}
-
-					subItemKey = depKey(subDep);
-					if (!depsIndex[subItemKey]) {
-						deps.push(subDep);
-						depsIndex[subItemKey] = true;
-					}
-				}
-			} else {
-				throw new Error(`Wrong bem block name ${match}
-				Use strict naming convention https://ru.bem.info/method/naming-convention/`);
-			}
-		});
-
-	return deps;
-}
-
-function depKey(dep) {
-	return dep.block +
-		(dep.elem ? '__' + dep.elem : '') +
-		(dep.mod ? '_' + dep.mod + (dep.val ? '_' + dep.val : '') : '');
-}
+    return `exports = ${bemDecl.stringify(decl, { format: "v1" })}`;
+  })
+  .createTech();

@@ -1,19 +1,17 @@
-'use strict';
+const fileEval = require("file-eval");
 
-module.exports = require('enb/lib/build-flow').create()
-	.name('festhtml')
-	.target('target', '?.html')
-	.useSourceFilename('source', '?.fest.js')
-	.useSourceFilename('json', '?.json')
-	.builder(function (sourceFilename, jsonFilename) {
-		// clean node cache
-		delete require.cache[require.resolve(sourceFilename)];
-		delete require.cache[require.resolve(jsonFilename)];
+module.exports = require("enb/lib/build-flow")
+  .create()
+  .name("festhtml")
+  .target("target", "?.html")
+  .useSourceFilename("source", "?.fest.js")
+  .useSourceFilename("json", "?.json")
+  .builder(function(template, data) {
+    let content = fileEval.sync(data);
+    if (typeof content == "function") {
+      content = content();
+    }
 
-		let content = require(jsonFilename);
-		if (typeof content == 'function') {
-			content = content();
-		}
-		return require(sourceFilename)(content);
-	})
-	.createTech();
+    return fileEval.sync(template)(content);
+  })
+  .createTech();
