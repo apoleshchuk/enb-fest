@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [3.1.0](https://github.com/apoleshchuk/enb-fest/compare/v3.0.0...v3.1.0) (2019-03-19)
+
+
+### Features
+
+* **techs:** fest-template, fest-page ([371a774](https://github.com/apoleshchuk/enb-fest/commit/371a774))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/apoleshchuk/enb-fest/compare/v2.0.0...v3.0.0) (2018-09-14)
 
