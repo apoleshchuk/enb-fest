@@ -4,9 +4,9 @@
   "description": "",
   "main": "techs.js",
   "dependencies": {
-    "@bem/sdk.cell": "^0.2.8",
-    "@bem/sdk.decl": "^0.3.8",
-    "@bem/sdk.naming.entity": "^0.2.10",
+    "@bem/sdk.cell": "^0.2.9",
+    "@bem/sdk.decl": "^0.3.9",
+    "@bem/sdk.naming.entity": "^0.2.11",
     "fest": "^0.12.1",
     "file-eval": "^2.0.0",
     "lodash.merge": "^4.6.1"
