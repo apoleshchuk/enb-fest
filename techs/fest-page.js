@@ -7,27 +7,9 @@ module.exports = require("enb/lib/build-flow")
   .target("target", "?.fest-page.xml")
   .defineOption("requiredSources", [])
   .defineOption("targets", {})
-  .dependOn("deps", "?.deps.js")
   .useSourceFilename("source", "?.page.xml")
   .useFileList("xml")
   .builder(function(source, files) {
-    const node = this.node;
-
-    return Promise.resolve()
-      .then(() => {
-        if (!this._requiredSources.length) {
-          return true;
-        }
-        return node.requireSources(
-          this._requiredSources.map(n => node.unmaskTargetName(n))
-        );
-      })
-      .then(() => {
-        return buildTemplate(
-          node,
-          files.map(f => f.fullname).concat(source),
-          this._targets
-        );
-      });
+    return buildTemplate.call(this, files.map(f => f.fullname).concat(source));
   })
   .createTech();
