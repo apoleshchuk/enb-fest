@@ -4,6 +4,7 @@ module.exports = require("enb/lib/build-flow")
   .create()
   .name("fest-template")
   .target("target", "?.fest-template.xml")
+  .dependOn("deps", "?.deps.js")
   .defineOption("targets", {})
   .useFileList("xml")
   .builder(function(files) {
