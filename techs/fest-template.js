@@ -6,6 +6,7 @@ module.exports = require("enb/lib/build-flow")
   .target("target", "?.fest-template.xml")
   .dependOn("deps", "?.deps.js")
   .defineOption("targets", {})
+  .defineOption("requiredSources", [])
   .useFileList("xml")
   .builder(function(files) {
     return buildTemplate.call(
