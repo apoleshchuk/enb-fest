@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.3](https://github.com/apoleshchuk/enb-fest/compare/v3.1.2...v3.1.3) (2019-03-22)
+
+
+### Bug Fixes
+
+* **fest-template:** requiredSources option ([f043e29](https://github.com/apoleshchuk/enb-fest/commit/f043e29))
+
+
+
 ## [3.1.2](https://github.com/apoleshchuk/enb-fest/compare/v3.1.1...v3.1.2) (2019-03-21)
 
 
